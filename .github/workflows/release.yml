@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Compute next SemVer tag
         id: semver
-        uses: K-Phoen/semver-release-action@master
+        uses: krogon/semver-release-action@master
         with:
           release_branch: master
           release_strategy: none
@@ -21,7 +21,7 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
-      - run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u kphoen --password-stdin
+      - run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u krogon --password-stdin
 
       - name: Push docker image
         run: make push
@@ -41,7 +41,7 @@ jobs:
 
       - name: Create release
         id: tag
-        uses: K-Phoen/semver-release-action@master
+        uses: krogon/semver-release-action@master
         with:
           release_branch: master
           tag: ${{ steps.semver.outputs.tag }}
