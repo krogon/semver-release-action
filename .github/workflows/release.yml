@@ -14,6 +14,7 @@ jobs:
         with:
           release_branch: master
           release_strategy: none
+          default_increment: minor
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
