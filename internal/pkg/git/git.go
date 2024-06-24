@@ -48,6 +48,7 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	})
 	if response != nil && response.StatusCode == http.StatusNotFound {
 		cmd.Print("v0.0.0")
+
 		return
 	}
 	action.AssertNoError(cmd, err, "could not list git refs: %s", err)
