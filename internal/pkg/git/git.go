@@ -3,8 +3,8 @@ package git
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"strings"
-    "regexp"
 
 	"github.com/K-Phoen/semver-release-action/internal/pkg/action"
 	"github.com/blang/semver/v4"
@@ -25,8 +25,6 @@ func createRegexFromTagFormat(tagFormat string) string {
 	tagFormatRegex := strings.ReplaceAll(tagFormat, "%major%", "\\d+")
 	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%minor%", "\\d+")
 	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%patch%", "\\d+")
-	tagFormatRegex = "^" + tagFormatRegex
-	tagFormatRegex = tagFormatRegex + "$"
 
 	return tagFormatRegex
 }
@@ -60,7 +58,7 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	for _, ref := range refs {
 		versionStr := strings.Replace(*ref.Ref, "refs/tags/", "", 1)
 		formatValid, _ := regexp.MatchString(tagFormatRegex, versionStr)
-		if formatValid != true {
+		if !formatValid {
 			continue
 		}
 		version, err := semver.ParseTolerant(versionStr)
