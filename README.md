@@ -56,11 +56,14 @@ name: Release
 
 on:
   pull_request:
-    types: closed
+    types: [closed]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged
+    
     steps:
       - name: Tag
         uses: krogon/semver-release-action@master

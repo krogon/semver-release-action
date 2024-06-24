@@ -2,11 +2,15 @@ name: Release
 
 on:
   pull_request:
-    types: closed
+    types: [closed]
 
 jobs:
   build:
+    name: Build and release
     runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged
+
     steps:
       - name: Compute next SemVer tag
         id: semver
@@ -16,10 +20,11 @@ jobs:
           release_strategy: none
           default_increment: minor
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN  }}
           ref: ${{ github.base_ref }}
 
       - run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u krogon --password-stdin
@@ -33,12 +38,10 @@ jobs:
         env:
           VERSION: ${{ steps.semver.outputs.tag }}
 
-      - uses: stefanzweifel/git-auto-commit-action@v2.1.0
+      - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Release ${{ steps.semver.outputs.tag }}
-          branch: ${{ github.base_ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
 
       - name: Create release
         id: tag
@@ -47,4 +50,4 @@ jobs:
           release_branch: master
           tag: ${{ steps.semver.outputs.tag }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

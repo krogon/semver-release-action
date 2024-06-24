@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/K-Phoen/semver-release-action/internal/pkg/action"
-	"github.com/google/go-github/v28/github"
+	"github.com/google/go-github/v45/github"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 )
@@ -67,11 +67,13 @@ func execute(cmd *cobra.Command, releaseType string, args []string) {
 		if err := createGithubRelease(ctx, client, repo, release); err != nil {
 			action.AssertNoError(cmd, err, "could not create GitHub release: %s", err)
 		}
+
 		return
 	case releaseTypeTag:
 		if err := createLightweightTag(ctx, client, repo, release); err != nil {
 			action.AssertNoError(cmd, err, "could not create lightweight tag: %s", err)
 		}
+
 		return
 	default:
 		action.Fail(cmd, "unknown release strategy: %s", releaseType)
