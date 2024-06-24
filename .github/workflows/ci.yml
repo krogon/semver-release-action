@@ -12,7 +12,7 @@ jobs:
       - name: golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
-          go_version: '1.18'
+          go_version: '1.19'
           golangci_lint_flags: '-c .golangci.yaml'
           reporter: github-pr-review
 
@@ -21,11 +21,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
-          go-version: '1.18'
+          go-version: '1.19'
           cache: true
 
       - run: make test

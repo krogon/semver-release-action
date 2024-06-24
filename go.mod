@@ -1,6 +1,6 @@
 module github.com/K-Phoen/semver-release-action
 
-go 1.18
+go 1.19
 
 require (
 	github.com/blang/semver/v4 v4.0.0
@@ -24,4 +24,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/K-Phoen/semver-release-action => github.com/krogon/semver-release-action v1.3.2-0.20200201232446-f3f0333ed926
+replace github.com/k-phoen/semver-release-action => github.com/krogon/semver-release-action v1.3.2-0.20210326053057-7d547fe0e0a5
