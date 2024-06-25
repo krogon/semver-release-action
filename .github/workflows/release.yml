@@ -45,7 +45,7 @@ jobs:
 
       - name: Create release
         id: tag
-        uses: krogon/semver-release-action@master
+        uses: krogon/semver-release-action@v2.1.0
         with:
           release_branch: master
           tag: ${{ steps.semver.outputs.tag }}
