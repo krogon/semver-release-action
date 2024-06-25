@@ -37,6 +37,10 @@ release ; `tag`: creates a lightweight tag ; `none`: computes the next
 
 **Optional** Format used to create tags. Default `"v%major%.%minor%.%patch%"`.
 
+### `tag_prefixt`
+
+**Optional** Tag prefix for monorepo. Default `""`.
+
 ### `tag`
 
 **Optional** Tag to use. If left undefined, it will be computed using the tags

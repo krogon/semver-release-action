@@ -60,6 +60,11 @@ func TestFormat(t *testing.T) {
 			format:          "v%major%.%minor%.%patch%-RC",
 			expectedVersion: "v1.2.3-RC",
 		},
+		{
+			version:         Version{major: 1, minor: 2, patch: 3},
+			format:          "module-v%major%.%minor%.%patch%",
+			expectedVersion: "module-v1.2.3",
+		},
 	}
 
 	for _, testCase := range cases {

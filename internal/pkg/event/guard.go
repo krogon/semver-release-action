@@ -1,7 +1,7 @@
 package event
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/K-Phoen/semver-release-action/internal/pkg/action"
@@ -116,7 +116,7 @@ func readEvent(cmd *cobra.Command, filePath string) []byte {
 	action.AssertNoError(cmd, err, "could not open GitHub event file: %s", err)
 	defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	action.AssertNoError(cmd, err, "could not read GitHub event file: %s", err)
 
 	return b
