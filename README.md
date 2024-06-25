@@ -5,6 +5,10 @@
 
 Based on https://github.com/K-Phoen/semver-release-action
 
+Additions:
+* default_increment - default increment bump when label is not found, default `"skip"`
+* tag_prefix - allows to manage separate tags in monorepo, default `""`
+
 ## Description
 
 Automatically create [SemVer](https://semver.org/) compliant releases based on
