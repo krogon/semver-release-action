@@ -27,6 +27,11 @@ inputs:
     required: true
     default: 'v%major%.%minor%.%patch%'
 
+  tag_prefix:
+    description: 'Format used to create tags'
+    required: true
+    default: ''
+
   tag:
     description: 'Tag to use'
     required: false

@@ -15,8 +15,8 @@ import (
 
 func LatestTagCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:  "latest-tag [REPOSITORY] [GH_TOKEN] [TAG_FORMAT]",
-		Args: cobra.ExactArgs(3),
+		Use:  "latest-tag [REPOSITORY] [GH_TOKEN] [TAG_FORMAT] [TAG_PREFIX]",
+		Args: cobra.ExactArgs(4),
 		Run:  executeLatestTag,
 	}
 }
@@ -33,6 +33,7 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	repository := args[0]
 	githubToken := args[1]
 	tagFormat := args[2]
+	tagPrefix := args[3]
 
 	ctx := context.Background()
 
@@ -53,15 +54,22 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	}
 	action.AssertNoError(cmd, err, "could not list git refs: %s", err)
 
+	latest := filterRemoteTags(refs, tagFormat, tagPrefix)
+	cmd.Printf("%sv%s", tagPrefix, latest)
+}
+
+func filterRemoteTags(refs []*github.Reference, tagFormat string, tagPrefix string) semver.Version {
 	latest := semver.MustParse("0.0.0")
 	tagFormatRegex := createRegexFromTagFormat(tagFormat)
 
 	for _, ref := range refs {
 		versionStr := strings.Replace(*ref.Ref, "refs/tags/", "", 1)
+		versionStr = strings.Replace(versionStr, tagPrefix, "", 1)
 		formatValid, _ := regexp.MatchString(tagFormatRegex, versionStr)
 		if !formatValid {
 			continue
 		}
+
 		version, err := semver.ParseTolerant(versionStr)
 		if err != nil {
 			continue
@@ -72,5 +80,5 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	cmd.Printf("v%s", latest)
+	return latest
 }
