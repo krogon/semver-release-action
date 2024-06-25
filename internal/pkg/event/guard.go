@@ -12,8 +12,8 @@ import (
 
 func GuardCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:  "guard [RELEASE_BRANCH] [GH_EVENT_PATH]",
-		Args: cobra.ExactArgs(2),
+		Use:  "guard [RELEASE_BRANCH] [DEFAULT_INCREMENT] [GH_EVENT_PATH]",
+		Args: cobra.ExactArgs(3),
 		Run:  executeGuard,
 	}
 }
@@ -28,7 +28,8 @@ func IncrementCommand() *cobra.Command {
 
 func executeGuard(cmd *cobra.Command, args []string) {
 	releaseBranch := args[0]
-	event := parseEvent(cmd, args[1])
+	defaultIncrementArg := args[1]
+	event := parseEvent(cmd, args[2])
 
 	if event.Action == nil || *event.Action != "closed" {
 		action.Skip(cmd, "pull request not closed")
@@ -51,8 +52,13 @@ func executeGuard(cmd *cobra.Command, args []string) {
 		)
 	}
 
+	defaultIncrement, err := semver.ParseIncrement(defaultIncrementArg)
+	if err != nil {
+		action.Fail(cmd, "no valid default_increment found")
+	}
+
 	_, incrementFound := extractIncrement(cmd, event.PullRequest)
-	if !incrementFound {
+	if !incrementFound && defaultIncrement == semver.IncrementSkip {
 		action.Skip(cmd, "no valid semver label found")
 	}
 }

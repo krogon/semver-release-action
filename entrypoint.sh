@@ -16,7 +16,7 @@ TAG_PREFIX="$5"
 DEFAULT_INCREMENT="$6"
 
 echo ::Executing bumper guard ::debug release_branch=${RELEASE_BRANCH},github_event_path=${GITHUB_EVENT_PATH}
-/bumper guard "${RELEASE_BRANCH}" "${GITHUB_EVENT_PATH}"
+/bumper guard "${RELEASE_BRANCH}" "${DEFAULT_INCREMENT}" "${GITHUB_EVENT_PATH}"
 if [ $? -eq 78 ]
 then
     echo ::debug ::Guard returned a neutral code, stopping the execution.
