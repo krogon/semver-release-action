@@ -7,7 +7,7 @@ Based on https://github.com/K-Phoen/semver-release-action
 
 Additions:
 * default_increment - default increment bump when label is not found, default `"skip"`
-* tag_prefix - allows to manage separate tags in monorepo, default `""`
+* tag_format - allows to use prefix/suffix in the format to manage separate components in monorepo
 
 ## Description
 
@@ -40,10 +40,6 @@ release ; `tag`: creates a lightweight tag ; `none`: computes the next
 ### `tag_format`
 
 **Optional** Format used to create tags. Default `"v%major%.%minor%.%patch%"`.
-
-### `tag_prefixt`
-
-**Optional** Tag prefix for monorepo. Default `""`.
 
 ### `tag`
 

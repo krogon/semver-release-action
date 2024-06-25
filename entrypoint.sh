@@ -12,10 +12,9 @@ RELEASE_BRANCH="$1"
 RELEASE_STRATEGY="$2"
 NEXT_TAG="$3"
 TAG_FORMAT="$4"
-TAG_PREFIX="$5"
-DEFAULT_INCREMENT="$6"
+DEFAULT_INCREMENT="$5"
 
-echo ::Executing bumper guard ::debug release_branch=${RELEASE_BRANCH},github_event_path=${GITHUB_EVENT_PATH}
+echo ::Executing bumper guard ::debug release_branch=${RELEASE_BRANCH},default_increment=${DEFAULT_INCREMENT},github_event_path=${GITHUB_EVENT_PATH}
 /bumper guard "${RELEASE_BRANCH}" "${DEFAULT_INCREMENT}" "${GITHUB_EVENT_PATH}"
 if [ $? -eq 78 ]
 then
@@ -25,13 +24,13 @@ fi
 
 if [ -z "${NEXT_TAG}" ]
 then
-    echo ::debug ::Executing bumper latest-tag github_repository=${GITHUB_REPOSITORY}
-    LATEST_TAG=$(/bumper latest-tag "${GITHUB_REPOSITORY}" "${GITHUB_TOKEN}" "${TAG_FORMAT}" "${TAG_PREFIX}")
+    echo ::debug ::Executing bumper latest-tag github_repository=${GITHUB_REPOSITORY},tag_format=${TAG_FORMAT}
+    LATEST_TAG=$(/bumper latest-tag "${GITHUB_REPOSITORY}" "${GITHUB_TOKEN}" "${TAG_FORMAT}")
 
-    echo ::debug ::Executing bumper increment github_event_path=${GITHUB_EVENT_PATH}
+    echo ::debug ::Executing bumper increment default_increment=${DEFAULT_INCREMENT},github_event_path=${GITHUB_EVENT_PATH}
     INCREMENT=$(/bumper increment "${DEFAULT_INCREMENT}" "${GITHUB_EVENT_PATH}")
 
-    echo ::debug ::Executing bumper semver latest_tag=${LATEST_TAG},increment=${INCREMENT}
+    echo ::debug ::Executing bumper semver latest_tag=${LATEST_TAG},increment=${INCREMENT},tag_format=${TAG_FORMAT}
     NEXT_TAG=$(/bumper semver "${LATEST_TAG}" "${INCREMENT}" "${TAG_FORMAT}")
 
     if [ "${LATEST_TAG}" = "${NEXT_TAG}" ]; then

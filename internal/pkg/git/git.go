@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/K-Phoen/semver-release-action/internal/pkg/action"
@@ -15,16 +16,17 @@ import (
 
 func LatestTagCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:  "latest-tag [REPOSITORY] [GH_TOKEN] [TAG_FORMAT] [TAG_PREFIX]",
-		Args: cobra.ExactArgs(4),
+		Use:  "latest-tag [REPOSITORY] [GH_TOKEN] [TAG_FORMAT]",
+		Args: cobra.ExactArgs(3),
 		Run:  executeLatestTag,
 	}
 }
 
 func createRegexFromTagFormat(tagFormat string) string {
-	tagFormatRegex := strings.ReplaceAll(tagFormat, "%major%", "\\d+")
-	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%minor%", "\\d+")
-	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%patch%", "\\d+")
+	tagFormatRegex := strings.ReplaceAll(tagFormat, "%major%", "(\\d+)")
+	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%minor%", "(\\d+)")
+	tagFormatRegex = strings.ReplaceAll(tagFormatRegex, "%patch%", "(\\d+)")
+	tagFormatRegex = "^" + tagFormatRegex
 
 	return tagFormatRegex
 }
@@ -33,7 +35,6 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	repository := args[0]
 	githubToken := args[1]
 	tagFormat := args[2]
-	tagPrefix := args[3]
 
 	ctx := context.Background()
 
@@ -54,25 +55,33 @@ func executeLatestTag(cmd *cobra.Command, args []string) {
 	}
 	action.AssertNoError(cmd, err, "could not list git refs: %s", err)
 
-	latest := filterRemoteTags(refs, tagFormat, tagPrefix)
-	cmd.Printf("%sv%s", tagPrefix, latest)
+	latest := filterRemoteTags(refs, tagFormat)
+	cmd.Printf("v%s", latest)
 }
 
-func filterRemoteTags(refs []*github.Reference, tagFormat string, tagPrefix string) semver.Version {
+func filterRemoteTags(refs []*github.Reference, tagFormat string) semver.Version {
 	latest := semver.MustParse("0.0.0")
 	tagFormatRegex := createRegexFromTagFormat(tagFormat)
 
 	for _, ref := range refs {
 		versionStr := strings.Replace(*ref.Ref, "refs/tags/", "", 1)
-		versionStr = strings.Replace(versionStr, tagPrefix, "", 1)
+
 		formatValid, _ := regexp.MatchString(tagFormatRegex, versionStr)
 		if !formatValid {
 			continue
 		}
 
-		version, err := semver.ParseTolerant(versionStr)
-		if err != nil {
-			continue
+		re := regexp.MustCompile(tagFormatRegex)
+		versionArr := re.FindStringSubmatch(versionStr)
+
+		major, _ := strconv.ParseUint(versionArr[1], 10, 64)
+		minor, _ := strconv.ParseUint(versionArr[2], 10, 64)
+		patch, _ := strconv.ParseUint(versionArr[3], 10, 64)
+
+		version := semver.Version{
+			Major: major,
+			Minor: minor,
+			Patch: patch,
 		}
 
 		if version.GT(latest) {
