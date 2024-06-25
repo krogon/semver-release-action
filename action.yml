@@ -48,4 +48,5 @@ runs:
     - ${{ inputs.release_strategy }}
     - ${{ inputs.tag }}
     - ${{ inputs.tag_format }}
+    - ${{ inputs.tag_prefix }}
     - ${{ inputs.default_increment }}
